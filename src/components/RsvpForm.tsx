@@ -6,7 +6,6 @@ import type { RsvpResult } from '../lib/types'
 type FieldErrors = {
   guestName?: string
   phone?: string
-  email?: string
   adultsCount?: string
   notes?: string
 }
@@ -21,24 +20,18 @@ const inputClass =
 function validate(fields: {
   guestName: string
   phone: string
-  email: string
   adultsCount: number
   notes: string
 }): FieldErrors {
   const errors: FieldErrors = {}
   const name = fields.guestName.trim()
   const digits = fields.phone.replace(/\D/g, '')
-  const email = fields.email.trim()
 
   if (name.length < 3) errors.guestName = 'Escreva o nome completo.'
   else if (name.length > 120) errors.guestName = 'Use um nome com até 120 caracteres.'
 
   if (digits.length < 10 || digits.length > 13) {
     errors.phone = 'Informe um telefone com DDD, de 10 a 13 dígitos.'
-  }
-
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errors.email = 'Este e-mail não parece válido.'
   }
 
   if (!Number.isInteger(fields.adultsCount) || fields.adultsCount < 1 || fields.adultsCount > 6) {
@@ -55,7 +48,6 @@ function validate(fields: {
 export function RsvpForm({ onConfirmed }: RsvpFormProps) {
   const [guestName, setGuestName] = useState('')
   const [phone, setPhone] = useState('')
-  const [email, setEmail] = useState('')
   const [adultsCount, setAdultsCount] = useState(1)
   const [notes, setNotes] = useState('')
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
@@ -66,7 +58,7 @@ export function RsvpForm({ onConfirmed }: RsvpFormProps) {
     event.preventDefault()
     setFormError('')
 
-    const errors = validate({ guestName, phone, email, adultsCount, notes })
+    const errors = validate({ guestName, phone, adultsCount, notes })
     setFieldErrors(errors)
     if (Object.keys(errors).length > 0) return
 
@@ -75,7 +67,6 @@ export function RsvpForm({ onConfirmed }: RsvpFormProps) {
       const result = await submitRsvp({
         guestName: guestName.trim(),
         phone,
-        email: email.trim(),
         adultsCount,
         notes: notes.trim(),
       })
@@ -89,13 +80,13 @@ export function RsvpForm({ onConfirmed }: RsvpFormProps) {
   }
 
   return (
-    <section id="rsvp" className="px-5 py-12 sm:px-8" aria-labelledby="rsvp-titulo">
-      <div className="mx-auto max-w-xl rounded-[2rem] bg-white p-6 shadow-card sm:p-10">
-        <p className="text-xs uppercase tracking-[0.22em] text-rose">RSVP</p>
-        <h2 id="rsvp-titulo" className="mt-3 font-display text-4xl sm:text-5xl">
-          Confirme a sua presença
+    <section id="rsvp" className="w-full text-left" aria-labelledby="rsvp-titulo">
+      <div>
+        <p className="text-center font-display text-4xl leading-none text-[#b76b78]">Confirmar</p>
+        <h2 id="rsvp-titulo" className="-mt-1 text-center font-script text-5xl leading-none text-[#e58b9a]">
+          presença
         </h2>
-        <p className="mt-3 text-sm leading-relaxed text-ink/70">
+        <p className="mt-3 text-center text-sm leading-relaxed text-[#b76b78]">
           Um pacote de fraldas por família, mesmo que venham mais pessoas. A lista de
           convidados fica só com os pais.
         </p>
@@ -156,28 +147,6 @@ export function RsvpForm({ onConfirmed }: RsvpFormProps) {
           </div>
 
           <div>
-            <label htmlFor="email" className="text-sm font-medium">
-              E-mail <span className="font-normal text-ink/50">(opcional)</span>
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              className={inputClass}
-              aria-invalid={Boolean(fieldErrors.email)}
-              aria-describedby={fieldErrors.email ? 'email-error' : undefined}
-            />
-            {fieldErrors.email && (
-              <p id="email-error" className="mt-2 text-sm text-rose">
-                {fieldErrors.email}
-              </p>
-            )}
-          </div>
-
-          <div>
             <label htmlFor="adults" className="text-sm font-medium">
               Quantas pessoas vêm?
             </label>
@@ -227,7 +196,7 @@ export function RsvpForm({ onConfirmed }: RsvpFormProps) {
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex w-full items-center justify-center rounded-full bg-ink px-7 py-3 text-sm font-medium text-cream transition hover:bg-rose disabled:cursor-wait disabled:opacity-70"
+            className="inline-flex w-full items-center justify-center rounded-full bg-[#e9899c] px-7 py-3 text-sm font-medium text-white transition hover:bg-[#d9788c] disabled:cursor-wait disabled:opacity-70"
           >
             {submitting ? 'Enviando…' : 'Confirmar presença'}
           </button>

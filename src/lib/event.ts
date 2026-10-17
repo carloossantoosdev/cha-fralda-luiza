@@ -11,7 +11,7 @@ export const eventDetails = {
   title: 'Chá de fraldas da Luiza',
   dateLabel: 'sábado, 5 de dezembro de 2026',
   dateShort: '05/12/2026',
-  timeLabel: import.meta.env.VITE_EVENT_TIME?.trim() || 'Horário a confirmar',
+  timeLabel: import.meta.env.VITE_EVENT_TIME?.trim() || '15h',
   address,
   mapsEmbedUrl: encodedQuery
     ? mapsKey

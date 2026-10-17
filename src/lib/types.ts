@@ -1,9 +1,8 @@
-export const DIAPER_SIZES = ['RN', 'P', 'M', 'G'] as const
+export const DIAPER_SIZES = ['P', 'M', 'G'] as const
 
 export type DiaperSize = (typeof DIAPER_SIZES)[number]
 
 export const DIAPER_SIZE_LABELS: Record<DiaperSize, string> = {
-  RN: 'RN (recém-nascido)',
   P: 'P',
   M: 'M',
   G: 'G',
@@ -12,7 +11,6 @@ export const DIAPER_SIZE_LABELS: Record<DiaperSize, string> = {
 export type RsvpInput = {
   guestName: string
   phone: string
-  email: string
   adultsCount: number
   notes: string
 }
@@ -23,4 +21,5 @@ export type RsvpResult = {
   diaperSize: DiaperSize
   quotaFallback: boolean
   fallbackMessage: string | null
+  alreadyConfirmed: boolean
 }

@@ -9,10 +9,13 @@ export default {
         butter: '#F5E6B8',
         ink: '#3F2E2A',
         rose: '#A85D6E',
+        gold: '#C4A36A',
+        ivory: '#F7F1E8',
         mist: '#F3E6E2',
       },
       fontFamily: {
         display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        script: ['"Great Vibes"', 'cursive'],
         sans: ['Outfit', 'system-ui', 'sans-serif'],
       },
       boxShadow: {

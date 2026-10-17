@@ -32,8 +32,8 @@ create unique index rsvps_name_phone_unique
 alter table public.rsvps enable row level security;
 alter table public.event_settings enable row level security;
 
-revoke all on table public.rsvps from public;
-revoke all on table public.event_settings from public;
+revoke all on table public.rsvps from public, anon, authenticated;
+revoke all on table public.event_settings from public, anon, authenticated;
 
 create or replace function public.assign_and_insert_rsvp(
   p_guest_name text,

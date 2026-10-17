@@ -23,7 +23,7 @@ O build de produção é `npm run build`. A pasta gerada é `dist`.
 | `VITE_EVENT_ADDRESS` | Endereço completo, visível no convite |
 | `VITE_MAPS_EMBED_QUERY` | Opcional. Query do mapa já codificada. Se ficar vazia, o endereço é codificado no site |
 | `VITE_MAPS_EMBED_KEY` | Opcional. Chave da Maps Embed API. Sem ela, o iframe usa o mapa público |
-| `VITE_EVENT_TIME` | Horário. Vazio mostra “Horário a confirmar” |
+| `VITE_EVENT_TIME` | Horário. O padrão é 15h |
 | `VITE_HOST_WHATSAPP` | Opcional. Número com DDI, só dígitos, para o link depois da confirmação |
 
 Enquanto o endereço e o horário não estiverem definidos, a página explica isso em vez de inventar um local.

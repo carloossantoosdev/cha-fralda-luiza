@@ -1,33 +1,64 @@
-import { useState } from 'react'
-import { EventDetails } from './components/EventDetails'
-import { Hero } from './components/Hero'
+import { useEffect, useState } from 'react'
+import { Envelope } from './components/Envelope'
+import { FrameScreen } from './components/FrameScreen'
+import { GiftIdeas } from './components/GiftIdeas'
+import { InviteCard, type InvitePanel } from './components/InviteCard'
 import { MapSection } from './components/MapSection'
 import { RsvpForm } from './components/RsvpForm'
 import { ThankYouCard } from './components/ThankYouCard'
-import { eventDetails } from './lib/event'
+import { playTrack, prepareTrack, toggleTrack } from './lib/youtube-audio'
+import { readSavedRsvp, saveRsvp } from './lib/saved-rsvp'
 import type { RsvpResult } from './lib/types'
 
 export default function App() {
-  const [confirmation, setConfirmation] = useState<RsvpResult | null>(null)
+  const [opened, setOpened] = useState(false)
+  const [opening, setOpening] = useState(false)
+  const [screen, setScreen] = useState<InvitePanel | null>(null)
+  const [musicOn, setMusicOn] = useState(false)
+  const [confirmation, setConfirmation] = useState<RsvpResult | null>(() => readSavedRsvp())
+
+  useEffect(() => {
+    prepareTrack()
+  }, [])
+
+  function openInvite() {
+    if (opening || opened) return
+    setOpening(true)
+    playTrack()
+    setMusicOn(true)
+    window.setTimeout(() => setOpened(true), 650)
+  }
+
+  function onToggleMusic() {
+    setMusicOn(toggleTrack())
+  }
+
+  function onConfirmed(result: RsvpResult) {
+    saveRsvp(result)
+    setConfirmation(result)
+  }
 
   return (
-    <div className="min-h-svh">
-      <Hero />
-      <EventDetails />
-      <MapSection />
-      {confirmation ? (
-        <ThankYouCard result={confirmation} />
-      ) : (
-        <RsvpForm onConfirmed={setConfirmation} />
-      )}
-      <footer className="px-5 pb-12 text-center text-sm text-ink/60">
-        <p className="font-display text-2xl text-ink">{eventDetails.babyName}</p>
-        <p className="mt-2">
-          Com carinho, {eventDetails.hosts}
-          <span className="mx-2 text-blush">·</span>
-          {eventDetails.dateShort}
-        </p>
-      </footer>
+    <div className="min-h-svh bg-[#f6dfe4]">
+      <div id="youtube-audio" className="pointer-events-none fixed left-0 top-0 h-px w-px opacity-0" />
+      <div className="mx-auto min-h-svh w-full max-w-[440px] overflow-hidden bg-[#fff7f4] shadow-card">
+        {!opened ? (
+          <Envelope opening={opening} onOpen={openInvite} />
+        ) : screen ? (
+          <FrameScreen onBack={() => setScreen(null)}>
+            {screen === 'rsvp' &&
+              (confirmation ? <ThankYouCard result={confirmation} /> : <RsvpForm onConfirmed={onConfirmed} />)}
+            {screen === 'place' && <MapSection />}
+            {screen === 'gifts' && <GiftIdeas result={confirmation} />}
+          </FrameScreen>
+        ) : (
+          <InviteCard
+            onSelect={setScreen}
+            musicOn={musicOn}
+            onToggleMusic={onToggleMusic}
+          />
+        )}
+      </div>
     </div>
   )
 }

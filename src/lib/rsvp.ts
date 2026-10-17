@@ -20,6 +20,7 @@ type RpcPayload = {
   diaper_size: DiaperSize
   quota_fallback: boolean
   fallback_message: string | null
+  already_confirmed?: boolean
 }
 
 function isDiaperSize(value: unknown): value is DiaperSize {
@@ -37,7 +38,7 @@ export async function submitRsvp(input: RsvpInput): Promise<RsvpResult> {
   const { data, error } = await supabase.rpc('assign_and_insert_rsvp', {
     p_guest_name: input.guestName,
     p_phone: input.phone,
-    p_email: input.email || null,
+    p_email: null,
     p_adults_count: input.adultsCount,
     p_notes: input.notes || null,
   })
@@ -73,5 +74,6 @@ export async function submitRsvp(input: RsvpInput): Promise<RsvpResult> {
     diaperSize: payload.diaper_size,
     quotaFallback: Boolean(payload.quota_fallback),
     fallbackMessage: payload.fallback_message,
+    alreadyConfirmed: Boolean(payload.already_confirmed),
   }
 }
