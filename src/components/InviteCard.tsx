@@ -46,10 +46,11 @@ type InviteCardProps = {
 
 export function InviteCard({ onSelect, musicOn, onToggleMusic }: InviteCardProps) {
   return (
-    <div className="card-in relative">
+    <div className="card-in flex min-h-svh w-full items-center justify-center bg-[#f7d4e0]">
+      <div className="relative w-full">
       <img
         src="/convite-luiza.jpg?v=8"
-        alt="Convite do chá de fraldas da Luiza. Chá de fraldas, 5 de dezembro de 2026, às 16h, no Salão de Festas do Residencial Jardim das Flores, Recife."
+        alt="Convite do chá de fraldas da Luiza. Chá de fraldas, 5 de dezembro de 2026, às 16h."
         className="block w-full"
       />
       <button
@@ -77,6 +78,7 @@ export function InviteCard({ onSelect, musicOn, onToggleMusic }: InviteCardProps
             </span>
           </button>
         ))}
+      </div>
       </div>
     </div>
   )

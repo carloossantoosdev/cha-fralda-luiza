@@ -7,9 +7,10 @@ type FrameScreenProps = {
 
 export function FrameScreen({ children, onBack }: FrameScreenProps) {
   return (
-    <div className="relative bg-[#fff7f4]">
-      <img src="/moldura-floral.jpg?v=2" alt="" className="block w-full" />
-      <div className="absolute inset-x-[18%] top-[14%] bottom-[18%] flex flex-col items-center text-center">
+    <div className="flex min-h-svh w-full items-center justify-center bg-[#f7d4e0]">
+      <div className="relative w-full">
+        <img src="/moldura-floral.jpg?v=2" alt="" className="block w-full" />
+        <div className="absolute inset-x-[18%] top-[14%] bottom-[18%] flex flex-col items-center text-center">
         <div className="frame-scroll flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto">{children}</div>
         <button
           type="button"
@@ -28,6 +29,7 @@ export function FrameScreen({ children, onBack }: FrameScreenProps) {
             />
           </svg>
         </button>
+        </div>
       </div>
     </div>
   )

@@ -39,9 +39,9 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-svh bg-[#f6dfe4]">
+    <div className="min-h-svh bg-[#f7d4e0]">
       <div id="youtube-audio" className="pointer-events-none fixed left-0 top-0 h-px w-px opacity-0" />
-      <div className="mx-auto min-h-svh w-full max-w-[440px] overflow-hidden bg-[#fff7f4] shadow-card">
+      <div className="mx-auto min-h-svh w-full max-w-[440px] overflow-hidden bg-[#f7d4e0] shadow-card">
         {!opened ? (
           <Envelope opening={opening} onOpen={openInvite} />
         ) : screen ? (
