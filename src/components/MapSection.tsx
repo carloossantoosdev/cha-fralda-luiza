@@ -27,14 +27,24 @@ export function MapSection() {
           />
         ) : null}
         {mapsLink ? (
-          <a
-            href={mapsLink}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-3 inline-flex text-sm text-[#e58b9a] underline decoration-[#f3c3ce] underline-offset-4"
-          >
-            Abrir no Google Maps
-          </a>
+          <div className="mt-3 flex flex-col items-center gap-2">
+            <a
+              href={mapsLink}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex text-sm text-[#e58b9a] underline decoration-[#f3c3ce] underline-offset-4"
+            >
+              Abrir no Google Maps
+            </a>
+            <a
+              href={eventDetails.wazeLink}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex text-sm text-[#e58b9a] underline decoration-[#f3c3ce] underline-offset-4"
+            >
+              Abrir no Waze
+            </a>
+          </div>
         ) : null}
       </div>
     </section>

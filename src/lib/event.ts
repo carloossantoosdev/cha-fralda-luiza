@@ -1,4 +1,6 @@
-const address = import.meta.env.VITE_EVENT_ADDRESS?.trim() ?? ''
+const address =
+  import.meta.env.VITE_EVENT_ADDRESS?.trim() ||
+  'R. Dr. João Santos Filho, 250 - Casa Forte, Recife - PE, 52060-615'
 const mapsQuery = import.meta.env.VITE_MAPS_EMBED_QUERY?.trim() ?? ''
 const mapsKey = import.meta.env.VITE_MAPS_EMBED_KEY?.trim() ?? ''
 const hostWhatsapp = (import.meta.env.VITE_HOST_WHATSAPP ?? '').replace(/\D/g, '')
@@ -21,6 +23,7 @@ export const eventDetails = {
   mapsLink: encodedQuery
     ? `https://www.google.com/maps/search/?api=1&query=${encodedQuery}`
     : '',
+  wazeLink: encodedQuery ? `https://waze.com/ul?q=${encodedQuery}&navigate=yes` : '',
   hostWhatsapp,
 }
 
