@@ -16,12 +16,12 @@ export function ThankYouCard({ result }: ThankYouCardProps) {
       aria-labelledby="obrigado-titulo"
     >
       <div>
-        <p className="text-xs uppercase tracking-[0.22em] text-rose">
+        <p className="text-sm uppercase tracking-[0.18em] text-[#e58b9a]">
           {result.alreadyConfirmed
             ? "Presença já confirmada"
             : "Presença confirmada"}
         </p>
-        <h2 id="obrigado-titulo" className="mt-6 font-display text-4xl">
+        <h2 id="obrigado-titulo" className="mt-6 font-display text-4xl text-[#e58b9a]">
           Que alegria, {firstName}
         </h2>
       </div>
@@ -29,12 +29,12 @@ export function ThankYouCard({ result }: ThankYouCardProps) {
       <div className="min-h-40 flex-1" aria-hidden />
 
       <div className="mb-4 flex w-full flex-col items-center px-2">
-          <p className="text-base leading-relaxed text-ink/75">
+          <p className="text-sm leading-relaxed text-[#e58b9a]">
             {result.alreadyConfirmed
               ? "Este nome e telefone já estavam na lista. A confirmação continua valendo uma vez só."
               : "A Luiza e os pais agradecem. O seu lugar no chá de 5 de dezembro já está guardado."}
           </p>
-          <p className="mt-4 text-base leading-relaxed text-ink/75">
+          <p className="mt-4 text-sm leading-relaxed text-[#e58b9a]">
             O tamanho da fralda da sua família está em Sugestões de presentes.
           </p>
         </div>
@@ -44,7 +44,7 @@ export function ThankYouCard({ result }: ThankYouCardProps) {
             href={whatsapp}
             target="_blank"
             rel="noreferrer"
-            className="mt-8 inline-flex text-sm font-medium text-rose underline decoration-blush underline-offset-4"
+            className="mt-8 inline-flex text-sm font-medium text-[#e58b9a] underline decoration-[#f3c3ce] underline-offset-4"
           >
             Falar com {eventDetails.hosts} no WhatsApp
           </a>

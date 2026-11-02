@@ -21,17 +21,12 @@ export function GiftIdeas({ result }: GiftIdeasProps) {
         Presentes:
       </h2>
 
-      <div className="min-h-36 flex-1" aria-hidden />
-
-      <div className="mb-10 flex w-full flex-col items-center gap-2">
+      <div className="mb-8 flex w-full flex-col items-center gap-10">
         {sizeLabel ? (
-          <div className="w-full rounded-[1.6rem] bg-[#f8e4ea] px-5 py-5 text-center">
+          <div className="w-full rounded-[1.6rem]  px-5 py-5 text-center">
             <p className="text-sm uppercase tracking-[0.18em] text-[#e58b9a]">O seu pacote</p>
             <p className="mt-2 font-display text-3xl leading-tight text-[#b76b78]">
               Traga fraldas tamanho {sizeLabel}
-            </p>
-            <p className="mt-3 text-sm leading-relaxed text-[#b76b78]">
-              Um pacote por família. A marca é livre.
             </p>
             {result?.quotaFallback && (
               <p className="mt-3 text-sm leading-relaxed text-[#b76b78]">
@@ -46,7 +41,7 @@ export function GiftIdeas({ result }: GiftIdeasProps) {
           </p>
         )}
 
-        <p className="text-sm leading-relaxed text-[#b76b78]">
+        <p className="mt-12 text-sm leading-relaxed text-[#b76b78]">
           Não vai conseguir ir ao chá, mas quer ajudar com fraldas ou outro presente? Fale com{' '}
           {whatsapp ? (
             <a
