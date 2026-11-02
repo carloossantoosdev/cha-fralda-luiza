@@ -4,12 +4,15 @@ export function MapSection() {
   const { address, mapsEmbedUrl, mapsLink } = eventDetails
 
   return (
-    <section className="flex w-full flex-col items-center text-center" aria-labelledby="local-titulo">
+    <section
+      className="flex h-full min-h-full w-full flex-1 flex-col items-center text-center"
+      aria-labelledby="local-titulo"
+    >
       <p className="font-display text-4xl leading-none text-[#b76b78]">Localização</p>
       <h2 id="local-titulo" className="-mt-1 font-script text-5xl leading-none text-[#e58b9a]">
         do chá
       </h2>
-      <div className="mt-4 w-full overflow-hidden rounded-2xl">
+      <div className="mt-4 flex w-full flex-1 flex-col">
         {address ? (
           <p className="text-sm leading-relaxed text-[#b76b78]">{address}</p>
         ) : (
@@ -18,16 +21,20 @@ export function MapSection() {
           </p>
         )}
         {mapsEmbedUrl ? (
-          <iframe
-            title="Mapa do chá de fraldas da Luiza"
-            src={mapsEmbedUrl}
-            className="mt-3 h-40 w-full rounded-2xl border-0"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-        ) : null}
+          <div className="mt-3 min-h-32 w-full flex-1">
+            <iframe
+              title="Mapa do chá de fraldas da Luiza"
+              src={mapsEmbedUrl}
+              className="h-full w-full rounded-2xl border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+        ) : (
+          <div className="flex-1" />
+        )}
         {mapsLink ? (
-          <div className="mt-3 flex flex-col items-center gap-2">
+          <div className="mt-auto flex flex-col items-center gap-2 pt-3">
             <a
               href={mapsLink}
               target="_blank"

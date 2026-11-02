@@ -28,3 +28,7 @@ export function readSavedRsvp(): RsvpResult | null {
 export function saveRsvp(result: RsvpResult) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(result))
 }
+
+export function clearSavedRsvp() {
+  localStorage.removeItem(STORAGE_KEY)
+}

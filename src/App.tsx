@@ -7,7 +7,8 @@ import { MapSection } from './components/MapSection'
 import { RsvpForm } from './components/RsvpForm'
 import { ThankYouCard } from './components/ThankYouCard'
 import { playTrack, prepareTrack, toggleTrack } from './lib/youtube-audio'
-import { readSavedRsvp, saveRsvp } from './lib/saved-rsvp'
+import { refreshSavedRsvp } from './lib/rsvp'
+import { clearSavedRsvp, readSavedRsvp, saveRsvp } from './lib/saved-rsvp'
 import type { RsvpResult } from './lib/types'
 
 export default function App() {
@@ -19,6 +20,31 @@ export default function App() {
 
   useEffect(() => {
     prepareTrack()
+  }, [])
+
+  useEffect(() => {
+    const saved = readSavedRsvp()
+    if (!saved) return
+
+    let cancelled = false
+    refreshSavedRsvp(saved.id)
+      .then((fresh) => {
+        if (cancelled) return
+        if (!fresh) {
+          clearSavedRsvp()
+          setConfirmation(null)
+          return
+        }
+        saveRsvp(fresh)
+        setConfirmation(fresh)
+      })
+      .catch(() => {
+        // Sem rede, a confirmação local permanece até a próxima visita.
+      })
+
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   function openInvite() {

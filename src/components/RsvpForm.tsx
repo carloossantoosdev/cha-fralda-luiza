@@ -15,7 +15,7 @@ type RsvpFormProps = {
 }
 
 const inputClass =
-  'mt-2 w-full rounded-2xl border border-blush bg-white px-4 py-3 text-base text-ink outline-none transition placeholder:text-ink/30 focus:border-rose focus:ring-2 focus:ring-blush'
+  'mt-1.5 w-full rounded-xl border border-blush bg-white px-3 py-2 text-sm text-ink outline-none transition placeholder:text-ink/30 focus:border-rose focus:ring-2 focus:ring-blush'
 
 function validate(fields: {
   guestName: string
@@ -87,8 +87,7 @@ export function RsvpForm({ onConfirmed }: RsvpFormProps) {
           presença
         </h2>
         <p className="mt-3 text-center text-sm leading-relaxed text-[#b76b78]">
-          Um pacote de fraldas por família, mesmo que venham mais pessoas. A lista de
-          convidados fica só com os pais.
+          Um pacote de fraldas por família, mesmo que venham mais pessoas.
         </p>
 
         {!isSupabaseConfigured && (
@@ -98,7 +97,7 @@ export function RsvpForm({ onConfirmed }: RsvpFormProps) {
           </p>
         )}
 
-        <form className="mt-8 space-y-5" onSubmit={handleSubmit} noValidate>
+        <form className="mx-auto mt-6 w-[70%] space-y-3" onSubmit={handleSubmit} noValidate>
           <div>
             <label htmlFor="guest-name" className="text-sm font-medium">
               Nome completo
@@ -157,7 +156,7 @@ export function RsvpForm({ onConfirmed }: RsvpFormProps) {
               onChange={(event) => setAdultsCount(Number(event.target.value))}
               className={inputClass}
             >
-              {[1, 2, 3, 4, 5, 6].map((count) => (
+              {[1, 2, 3, 4].map((count) => (
                 <option key={count} value={count}>
                   {count} {count === 1 ? 'pessoa' : 'pessoas'}
                 </option>
@@ -196,7 +195,7 @@ export function RsvpForm({ onConfirmed }: RsvpFormProps) {
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex w-full items-center justify-center rounded-full bg-[#e9899c] px-7 py-3 text-sm font-medium text-white transition hover:bg-[#d9788c] disabled:cursor-wait disabled:opacity-70"
+            className="inline-flex w-full items-center justify-center rounded-full bg-[#e9899c] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#d9788c] disabled:cursor-wait disabled:opacity-70"
           >
             {submitting ? 'Enviando…' : 'Confirmar presença'}
           </button>

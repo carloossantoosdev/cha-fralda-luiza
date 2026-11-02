@@ -68,6 +68,10 @@ export async function submitRsvp(input: RsvpInput): Promise<RsvpResult> {
     )
   }
 
+  return toResult(payload)
+}
+
+function toResult(payload: RpcPayload): RsvpResult {
   return {
     id: payload.id,
     guestName: payload.guest_name,
@@ -76,4 +80,29 @@ export async function submitRsvp(input: RsvpInput): Promise<RsvpResult> {
     fallbackMessage: payload.fallback_message,
     alreadyConfirmed: Boolean(payload.already_confirmed),
   }
+}
+
+export async function refreshSavedRsvp(id: string): Promise<RsvpResult | null> {
+  if (!isSupabaseConfigured || !supabase) {
+    throw new RsvpError(
+      'O formulário ainda não está ligado ao Supabase. Configure a URL e a chave anônima.',
+      'config',
+    )
+  }
+
+  const { data, error } = await supabase.rpc('lookup_rsvp', { p_id: id })
+
+  if (error) {
+    throw new RsvpError(
+      'Não conseguimos conferir a confirmação agora.',
+      'network',
+    )
+  }
+
+  if (!data) return null
+
+  const payload = data as RpcPayload
+  if (!isDiaperSize(payload.diaper_size)) return null
+
+  return toResult(payload)
 }
