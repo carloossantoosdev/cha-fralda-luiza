@@ -34,13 +34,14 @@ export function GiftIdeas({ result }: GiftIdeasProps) {
       aria-labelledby="presentes-titulo"
       className="flex h-full min-h-full w-full flex-1 flex-col items-center text-center"
     >
-      <p className="font-display text-4xl leading-none text-[#b76b78]">Sugestões</p>
-      <h2 id="presentes-titulo" className="-mt-1 font-script text-5xl leading-none text-[#e58b9a]">
-        Presentes:
-      </h2>
-
       {sizeLabel ? (
         <div className="mb-8 flex w-full flex-col items-center gap-10">
+          <div>
+            <p className="font-display text-4xl leading-none text-[#b76b78]">Sugestões</p>
+            <h2 id="presentes-titulo" className="-mt-1 font-script text-5xl leading-none text-[#e58b9a]">
+              Presentes:
+            </h2>
+          </div>
           <div className="w-full rounded-[1.6rem] px-5 py-5 text-center">
             <p className="text-sm uppercase tracking-[0.18em] text-[#e58b9a]">O seu pacote</p>
             <p className="mt-2 font-display text-3xl leading-tight text-[#b76b78]">
@@ -57,7 +58,12 @@ export function GiftIdeas({ result }: GiftIdeasProps) {
         </div>
       ) : (
         <>
-          <div className="min-h-36 flex-1" aria-hidden />
+          <div className="flex w-full flex-1 flex-col items-center justify-center">
+            <p className="font-display text-5xl leading-none text-[#b76b78]">Sugestões</p>
+            <h2 id="presentes-titulo" className="-mt-1 font-script text-6xl leading-none text-[#e58b9a]">
+              Presentes:
+            </h2>
+          </div>
           <div className="mb-4 flex w-full flex-col items-center gap-4">
             <p className="text-sm leading-relaxed text-[#b76b78]">
               Confirme a presença para ver o tamanho da fralda da sua família. Cada família confirma uma vez só.

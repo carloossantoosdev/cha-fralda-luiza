@@ -146,25 +146,6 @@ export function RsvpForm({ onConfirmed }: RsvpFormProps) {
           </div>
 
           <div>
-            <label htmlFor="adults" className="text-sm font-medium">
-              Quantas pessoas vêm?
-            </label>
-            <select
-              id="adults"
-              name="adultsCount"
-              value={adultsCount}
-              onChange={(event) => setAdultsCount(Number(event.target.value))}
-              className={inputClass}
-            >
-              {[1, 2, 3, 4].map((count) => (
-                <option key={count} value={count}>
-                  {count} {count === 1 ? 'pessoa' : 'pessoas'}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
             <label htmlFor="notes" className="text-sm font-medium">
               Observações <span className="font-normal text-ink/50">(opcional)</span>
             </label>
