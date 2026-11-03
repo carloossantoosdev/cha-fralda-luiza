@@ -6,7 +6,6 @@ import type { RsvpResult } from '../lib/types'
 type FieldErrors = {
   guestName?: string
   phone?: string
-  adultsCount?: string
   notes?: string
 }
 
@@ -20,7 +19,6 @@ const inputClass =
 function validate(fields: {
   guestName: string
   phone: string
-  adultsCount: number
   notes: string
 }): FieldErrors {
   const errors: FieldErrors = {}
@@ -34,10 +32,6 @@ function validate(fields: {
     errors.phone = 'Informe um telefone com DDD, de 10 a 13 dígitos.'
   }
 
-  if (!Number.isInteger(fields.adultsCount) || fields.adultsCount < 1 || fields.adultsCount > 6) {
-    errors.adultsCount = 'Escolha entre 1 e 6 pessoas.'
-  }
-
   if (fields.notes.trim().length > 500) {
     errors.notes = 'A observação pode ter até 500 caracteres.'
   }
@@ -48,7 +42,6 @@ function validate(fields: {
 export function RsvpForm({ onConfirmed }: RsvpFormProps) {
   const [guestName, setGuestName] = useState('')
   const [phone, setPhone] = useState('')
-  const [adultsCount, setAdultsCount] = useState(1)
   const [notes, setNotes] = useState('')
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [formError, setFormError] = useState('')
@@ -58,7 +51,7 @@ export function RsvpForm({ onConfirmed }: RsvpFormProps) {
     event.preventDefault()
     setFormError('')
 
-    const errors = validate({ guestName, phone, adultsCount, notes })
+    const errors = validate({ guestName, phone, notes })
     setFieldErrors(errors)
     if (Object.keys(errors).length > 0) return
 
@@ -67,7 +60,7 @@ export function RsvpForm({ onConfirmed }: RsvpFormProps) {
       const result = await submitRsvp({
         guestName: guestName.trim(),
         phone,
-        adultsCount,
+        adultsCount: 1,
         notes: notes.trim(),
       })
       onConfirmed(result)
