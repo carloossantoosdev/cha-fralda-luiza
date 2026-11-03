@@ -9,7 +9,7 @@ const encodedQuery = mapsQuery || (address ? encodeURIComponent(address) : '')
 
 export const eventDetails = {
   babyName: 'Luiza Santos Martins',
-  hosts: 'Carlos Eduardo e Wilayane Alves',
+  hosts: 'Carlos e Lay',
   title: 'Chá de fraldas da Luiza',
   dateLabel: 'sábado, 5 de dezembro de 2026',
   dateShort: '05/12/2026',
