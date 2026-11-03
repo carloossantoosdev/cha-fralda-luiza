@@ -1,4 +1,4 @@
-const VIDEO_ID = 'foU19dHir2I'
+const VIDEO_ID = '_DZdm2mX5LM'
 
 type YtPlayer = {
   playVideo: () => void
