@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { MusicButton } from './MusicButton'
 
 export type InvitePanel = 'rsvp' | 'place' | 'gifts'
 
@@ -53,15 +54,7 @@ export function InviteCard({ onSelect, musicOn, onToggleMusic }: InviteCardProps
         alt="Convite do chá de fraldas da Luiza. Chá de fraldas, 5 de dezembro de 2026, às 16h."
         className="block w-full"
       />
-      <button
-        type="button"
-        onClick={onToggleMusic}
-        aria-pressed={musicOn}
-        className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 text-base text-[#e9899c] shadow-sm"
-      >
-        <span aria-hidden>{musicOn ? '♫' : '♪'}</span>
-        <span className="sr-only">{musicOn ? 'Pausar música' : 'Ouvir música'}</span>
-      </button>
+      <MusicButton musicOn={musicOn} onToggleMusic={onToggleMusic} />
       <div className="absolute left-[8%] right-[8%] top-[71%] grid h-[12.8%] grid-cols-3">
         {actions.map((action) => (
           <button

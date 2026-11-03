@@ -1,15 +1,19 @@
 import type { ReactNode } from 'react'
+import { MusicButton } from './MusicButton'
 
 type FrameScreenProps = {
   children: ReactNode
   onBack: () => void
+  musicOn: boolean
+  onToggleMusic: () => void
 }
 
-export function FrameScreen({ children, onBack }: FrameScreenProps) {
+export function FrameScreen({ children, onBack, musicOn, onToggleMusic }: FrameScreenProps) {
   return (
     <div className="flex min-h-svh w-full items-center justify-center bg-[#f7d4e0]">
       <div className="relative w-full">
         <img src="/moldura-floral.jpg?v=2" alt="" className="block w-full" />
+        <MusicButton musicOn={musicOn} onToggleMusic={onToggleMusic} />
         <div className="absolute inset-x-[18%] top-[13%] bottom-[11%] flex flex-col items-center text-center">
           <div className="frame-scroll flex h-full min-h-0 w-full flex-1 flex-col overflow-y-auto">{children}</div>
         </div>

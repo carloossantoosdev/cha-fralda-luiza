@@ -6,6 +6,7 @@ type YtPlayer = {
   unMute: () => void
   setVolume: (volume: number) => void
   getPlayerState: () => number
+  getIframe?: () => HTMLIFrameElement
 }
 
 type YtNamespace = {
@@ -23,6 +24,9 @@ declare global {
 let player: YtPlayer | null = null
 let ready = false
 let shouldPlay = false
+let creating = false
+let resumeTimer = 0
+let resumes = 0
 
 function playNow() {
   if (!player || !ready) return
@@ -31,11 +35,48 @@ function playNow() {
   player.playVideo()
 }
 
+function scheduleResume() {
+  if (!shouldPlay || resumes >= 12) return
+  window.clearTimeout(resumeTimer)
+  resumeTimer = window.setTimeout(() => {
+    if (!shouldPlay) return
+    resumes += 1
+    playNow()
+  }, 300)
+}
+
+function ensureHost() {
+  if (document.getElementById('youtube-audio')) return
+  const host = document.createElement('div')
+  host.id = 'youtube-audio-host'
+  host.setAttribute('aria-hidden', 'true')
+  host.style.cssText = [
+    'position:fixed',
+    'left:0',
+    'bottom:0',
+    'width:200px',
+    'height:200px',
+    'opacity:0.02',
+    'overflow:hidden',
+    'pointer-events:none',
+    'z-index:0',
+  ].join(';')
+  const slot = document.createElement('div')
+  slot.id = 'youtube-audio'
+  host.appendChild(slot)
+  document.body.appendChild(host)
+}
+
 function createPlayer() {
   const yt = window.YT
-  if (!yt || player) return
+  if (!yt || player || creating) return
+  ensureHost()
+  if (!document.getElementById('youtube-audio')) return
+  creating = true
   player = new yt.Player('youtube-audio', {
     videoId: VIDEO_ID,
+    width: 200,
+    height: 200,
     playerVars: {
       autoplay: 0,
       controls: 0,
@@ -46,20 +87,35 @@ function createPlayer() {
       modestbranding: 1,
       rel: 0,
       playsinline: 1,
+      origin: window.location.origin,
     },
     events: {
-      onReady: () => {
+      onReady: (event: { target: YtPlayer }) => {
         ready = true
+        const iframe = event.target.getIframe?.()
+        if (iframe) iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture')
         if (shouldPlay) playNow()
       },
       onStateChange: (event: { data: number }) => {
-        if (event.data === yt.PlayerState.ENDED) playNow()
+        if (!shouldPlay) return
+        if (event.data === yt.PlayerState.ENDED) {
+          playNow()
+          return
+        }
+        if (event.data === yt.PlayerState.PLAYING) {
+          window.setTimeout(() => {
+            if (player?.getPlayerState() === yt.PlayerState.PLAYING) resumes = 0
+          }, 2000)
+          return
+        }
+        if (event.data === 2 || event.data === 5 || event.data === -1) scheduleResume()
       },
     },
   })
 }
 
 export function prepareTrack() {
+  ensureHost()
   if (window.YT?.Player) {
     createPlayer()
     return
@@ -80,6 +136,7 @@ export function playTrack() {
 
 export function pauseTrack() {
   shouldPlay = false
+  window.clearTimeout(resumeTimer)
   player?.pauseVideo()
 }
 
