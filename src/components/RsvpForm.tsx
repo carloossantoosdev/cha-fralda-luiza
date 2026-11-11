@@ -79,9 +79,9 @@ export function RsvpForm({ onConfirmed }: RsvpFormProps) {
         <h2 id="rsvp-titulo" className="-mt-1 text-center font-script text-5xl leading-none text-[#e58b9a]">
           presença
         </h2>
-        <p className="mt-3 text-center text-sm leading-relaxed text-[#b76b78]">
+        {/* <p className="mt-3 text-center text-sm leading-relaxed text-[#b76b78]">
           Um pacote de fraldas por família, mesmo que venham mais pessoas.
-        </p>
+        </p> */}
 
         {!isFirebaseConfigured && (
           <p className="mt-5 rounded-2xl bg-butter px-4 py-3 text-sm leading-relaxed" role="status">
