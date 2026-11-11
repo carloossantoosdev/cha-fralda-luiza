@@ -1,5 +1,11 @@
-import { isSupabaseConfigured, supabase } from './supabase'
+import { doc, getDoc, runTransaction, serverTimestamp } from 'firebase/firestore'
+import { db, isFirebaseConfigured } from './firebase'
 import { DIAPER_SIZES, type DiaperSize, type RsvpInput, type RsvpResult } from './types'
+
+const FALLBACK_MESSAGE =
+  'Qualquer tamanho P ou M também ajuda, se o indicado estiver difícil de encontrar.'
+
+const TARGETS = { P: 5, M: 7, G: 5 } as const
 
 export class RsvpError extends Error {
   code: 'config' | 'duplicate' | 'validation' | 'network'
@@ -14,95 +20,134 @@ export class RsvpError extends Error {
   }
 }
 
-type RpcPayload = {
-  id: string
-  guest_name: string
-  diaper_size: DiaperSize
-  quota_fallback: boolean
-  fallback_message: string | null
-  already_confirmed?: boolean
+type Counts = Record<DiaperSize, number>
+
+function normalizeName(value: string) {
+  return value.trim().replace(/\s+/g, ' ')
+}
+
+function digitsOnly(value: string) {
+  return value.replace(/\D/g, '')
 }
 
 function isDiaperSize(value: unknown): value is DiaperSize {
   return typeof value === 'string' && DIAPER_SIZES.includes(value as DiaperSize)
 }
 
-export async function submitRsvp(input: RsvpInput): Promise<RsvpResult> {
-  if (!isSupabaseConfigured || !supabase) {
-    throw new RsvpError(
-      'O formulário ainda não está ligado ao Supabase. Configure a URL e a chave anônima.',
-      'config',
-    )
+async function identityId(name: string, phone: string) {
+  const bytes = new TextEncoder().encode(`${name}|${phone}`)
+  const digest = await crypto.subtle.digest('SHA-256', bytes)
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('')
+}
+
+function emptyCounts(): Counts {
+  return { P: 0, M: 0, G: 0 }
+}
+
+function pickSize(counts: Counts): DiaperSize {
+  const deficit = {
+    P: TARGETS.P - counts.P,
+    M: TARGETS.M - counts.M,
+    G: TARGETS.G - counts.G,
   }
+  const ranked: DiaperSize[] = ['M', 'G', 'P']
+  return ranked.reduce((best, size) => (deficit[size] > deficit[best] ? size : best))
+}
 
-  const { data, error } = await supabase.rpc('assign_and_insert_rsvp', {
-    p_guest_name: input.guestName,
-    p_phone: input.phone,
-    p_email: null,
-    p_adults_count: input.adultsCount,
-    p_notes: input.notes || null,
-  })
-
-  if (error) {
-    const message = error.message ?? ''
-    if (message.includes('duplicate_rsvp')) {
-      throw new RsvpError(
-        'Já recebemos uma confirmação com este nome e telefone. Se precisar de alterar alguma coisa, fale com Carlos Eduardo ou Wilayane.',
-        'duplicate',
-      )
-    }
-    if (message.startsWith('invalid_')) {
-      throw new RsvpError('Confira os campos e tente novamente.', 'validation')
-    }
-    throw new RsvpError(
-      'Não conseguimos enviar agora. Verifique a conexão e tente de novo.',
-      'network',
-    )
-  }
-
-  const payload = data as RpcPayload | null
-  if (!payload || !isDiaperSize(payload.diaper_size)) {
+function toResult(
+  id: string,
+  data: Record<string, unknown>,
+  alreadyConfirmed: boolean,
+): RsvpResult {
+  if (!isDiaperSize(data.diaperSize)) {
     throw new RsvpError(
       'A confirmação foi enviada, mas a resposta veio incompleta. Fale com os pais para confirmar o tamanho.',
       'network',
     )
   }
-
-  return toResult(payload)
+  const quotaFallback = Boolean(data.quotaFallback)
+  return {
+    id,
+    guestName: String(data.guestName ?? ''),
+    diaperSize: data.diaperSize,
+    quotaFallback,
+    fallbackMessage: quotaFallback ? FALLBACK_MESSAGE : null,
+    alreadyConfirmed,
+  }
 }
 
-function toResult(payload: RpcPayload): RsvpResult {
-  return {
-    id: payload.id,
-    guestName: payload.guest_name,
-    diaperSize: payload.diaper_size,
-    quotaFallback: Boolean(payload.quota_fallback),
-    fallbackMessage: payload.fallback_message,
-    alreadyConfirmed: Boolean(payload.already_confirmed),
+function ensureDb() {
+  if (!isFirebaseConfigured || !db) {
+    throw new RsvpError(
+      'O formulário ainda não está ligado ao Firebase. Configure o projeto e a chave do app.',
+      'config',
+    )
+  }
+  return db
+}
+
+export async function submitRsvp(input: RsvpInput): Promise<RsvpResult> {
+  const database = ensureDb()
+  const guestName = normalizeName(input.guestName)
+  const phone = digitsOnly(input.phone)
+  const notes = input.notes.trim()
+
+  if (guestName.length < 3 || guestName.length > 120) {
+    throw new RsvpError('Confira os campos e tente novamente.', 'validation')
+  }
+  if (phone.length < 10 || phone.length > 13) {
+    throw new RsvpError('Confira os campos e tente novamente.', 'validation')
+  }
+  if (notes.length > 500) {
+    throw new RsvpError('Confira os campos e tente novamente.', 'validation')
+  }
+
+  const id = await identityId(guestName, phone)
+  const rsvpRef = doc(database, 'rsvps', id)
+  const countsRef = doc(database, 'meta', 'counts')
+
+  try {
+    return await runTransaction(database, async (transaction) => {
+      const existing = await transaction.get(rsvpRef)
+      if (existing.exists()) return toResult(id, existing.data(), true)
+
+      const countsSnap = await transaction.get(countsRef)
+      const counts = countsSnap.exists()
+        ? { ...emptyCounts(), ...(countsSnap.data() as Partial<Counts>) }
+        : emptyCounts()
+      const diaperSize = pickSize(counts)
+      const quotaFallback = TARGETS[diaperSize] - counts[diaperSize] <= 0
+      const nextCounts = { ...counts, [diaperSize]: counts[diaperSize] + 1 }
+
+      transaction.set(rsvpRef, {
+        guestName,
+        phone,
+        adultsCount: 1,
+        notes,
+        diaperSize,
+        quotaFallback,
+        createdAt: serverTimestamp(),
+      })
+      transaction.set(countsRef, nextCounts)
+
+      return toResult(id, { guestName, diaperSize, quotaFallback }, false)
+    })
+  } catch (error) {
+    if (error instanceof RsvpError) throw error
+    throw new RsvpError(
+      'Não conseguimos enviar agora. Verifique a conexão e tente de novo.',
+      'network',
+    )
   }
 }
 
 export async function refreshSavedRsvp(id: string): Promise<RsvpResult | null> {
-  if (!isSupabaseConfigured || !supabase) {
-    throw new RsvpError(
-      'O formulário ainda não está ligado ao Supabase. Configure a URL e a chave anônima.',
-      'config',
-    )
+  const database = ensureDb()
+  try {
+    const snapshot = await getDoc(doc(database, 'rsvps', id))
+    if (!snapshot.exists()) return null
+    return toResult(id, snapshot.data(), true)
+  } catch {
+    throw new RsvpError('Não conseguimos conferir a confirmação agora.', 'network')
   }
-
-  const { data, error } = await supabase.rpc('lookup_rsvp', { p_id: id })
-
-  if (error) {
-    throw new RsvpError(
-      'Não conseguimos conferir a confirmação agora.',
-      'network',
-    )
-  }
-
-  if (!data) return null
-
-  const payload = data as RpcPayload
-  if (!isDiaperSize(payload.diaper_size)) return null
-
-  return toResult(payload)
 }

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { isSupabaseConfigured } from '../lib/supabase'
+import { isFirebaseConfigured } from '../lib/firebase'
 import { RsvpError, submitRsvp } from '../lib/rsvp'
 import type { RsvpResult } from '../lib/types'
 
@@ -83,10 +83,10 @@ export function RsvpForm({ onConfirmed }: RsvpFormProps) {
           Um pacote de fraldas por família, mesmo que venham mais pessoas.
         </p>
 
-        {!isSupabaseConfigured && (
+        {!isFirebaseConfigured && (
           <p className="mt-5 rounded-2xl bg-butter px-4 py-3 text-sm leading-relaxed" role="status">
-            O envio ainda depende do projeto Supabase. Com a URL e a chave anônima no
-            ambiente, este formulário passa a guardar as confirmações.
+            O envio ainda depende do Firebase. Com os dados do app no ambiente, este
+            formulário passa a guardar as confirmações.
           </p>
         )}
 

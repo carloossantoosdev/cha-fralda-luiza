@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function countsPath() {
+      return /databases/$(database)/documents/meta/counts;
+    }
+
+    function validRsvp(id) {
+      let data = request.resource.data;
+      let before = exists(countsPath()) ? get(countsPath()).data : {"P": 0, "M": 0, "G": 0};
+      let dP = 5 - before.P;
+      let dM = 7 - before.M;
+      let dG = 5 - before.G;
+      let size = dM >= dP && dM >= dG ? "M" : dG >= dP ? "G" : "P";
+      let deficit = size == "P" ? dP : size == "M" ? dM : dG;
+      let after = getAfter(countsPath()).data;
+      return data.keys().hasOnly(["guestName", "phone", "adultsCount", "notes", "diaperSize", "quotaFallback", "createdAt"])
+        && data.guestName is string
+        && data.guestName.size() >= 3
+        && data.guestName.size() <= 120
+        && data.phone is string
+        && data.phone.matches('^[0-9]{10,13}$')
+        && data.adultsCount == 1
+        && data.notes is string
+        && data.notes.size() <= 500
+        && data.diaperSize == size
+        && data.quotaFallback == (deficit <= 0)
+        && data.createdAt == request.time
+        && id == hashing.sha256(data.guestName + "|" + data.phone).toHexString()
+        && after[size] == before[size] + 1;
+    }
+
+    match /meta/counts {
+      allow get: if true;
+      allow list: if false;
+      allow delete: if false;
+      allow create: if request.resource.data.keys().hasOnly(["P", "M", "G"])
+        && request.resource.data.P is int
+        && request.resource.data.M is int
+        && request.resource.data.G is int
+        && request.resource.data.P >= 0
+        && request.resource.data.M >= 0
+        && request.resource.data.G >= 0
+        && request.resource.data.P + request.resource.data.M + request.resource.data.G == 1;
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(["P", "M", "G"])
+        && request.resource.data.P is int
+        && request.resource.data.M is int
+        && request.resource.data.G is int
+        && request.resource.data.P >= resource.data.P
+        && request.resource.data.M >= resource.data.M
+        && request.resource.data.G >= resource.data.G
+        && request.resource.data.P + request.resource.data.M + request.resource.data.G
+          == resource.data.P + resource.data.M + resource.data.G + 1;
+    }
+
+    match /rsvps/{id} {
+      allow get: if true;
+      allow list: if false;
+      allow update, delete: if false;
+      allow create: if validRsvp(id);
+    }
+  }
+}
