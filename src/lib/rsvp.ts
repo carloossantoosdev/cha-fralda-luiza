@@ -37,7 +37,10 @@ function isDiaperSize(value: unknown): value is DiaperSize {
 async function identityId(name: string, phone: string) {
   const bytes = new TextEncoder().encode(`${name}|${phone}`)
   const digest = await crypto.subtle.digest('SHA-256', bytes)
-  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('')
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('')
+    .toUpperCase()
 }
 
 function emptyCounts(): Counts {
