@@ -35,7 +35,7 @@ export function ThankYouCard({ result }: ThankYouCardProps) {
               : "A Luiza e os pais agradecem. O seu lugar no chá de 5 de dezembro já está guardado."}
           </p>
           <p className="mt-4 text-sm leading-relaxed text-[#e58b9a]">
-            O tamanho da fralda da sua família está em Sugestões de presentes.
+            O tamanho da fralda está em Sugestões de presentes.
           </p>
         </div>
 

@@ -12,7 +12,7 @@ export function GiftIdeas({ result }: GiftIdeasProps) {
   )
   const help = (className: string) => (
     <p className={className}>
-      Não vai conseguir ir ao chá, mas quer ajudar com fraldas ou outro presente? Fale com{' '}
+      Não vai conseguir ir ao chá, mas quer nos presentear com fraldas ou outro presente? Fale com{' '}
       {whatsapp ? (
         <a
           href={whatsapp}
