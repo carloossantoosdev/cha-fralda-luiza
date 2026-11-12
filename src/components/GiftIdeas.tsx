@@ -66,7 +66,7 @@ export function GiftIdeas({ result }: GiftIdeasProps) {
           </div>
           <div className="mb-4 flex w-full flex-col items-center gap-4">
             <p className="text-sm leading-relaxed text-[#b76b78]">
-              Confirme a presença para ver o tamanho da fralda da sua família. Cada família confirma uma vez só.
+              Confirme a presença para ver o tamanho da fralda. Confirme apenas uma vez.
             </p>
             {help('text-sm leading-relaxed text-[#b76b78]')}
           </div>
